@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary:    #1a5276;
+  --color-primary-lt: #2e86c1;
+  --color-accent:     #1e8449;
+  --color-warning:    #d35400;
+  --color-danger:     #c0392b;
+  --color-surface:    #f8f9fa;
+  --color-border:     #dee2e6;
+  --font-clinical:    "Inter", system-ui, sans-serif;
+}
+
+body {
+  font-family: var(--font-clinical);
+  background: var(--color-surface);
+  color: #212529;
+}
+
+.consultation-layout {
+  @apply h-screen flex flex-col overflow-hidden;
+}
+
+.dashboard-grid {
+  @apply grid grid-cols-2 gap-6 p-6;
+}
