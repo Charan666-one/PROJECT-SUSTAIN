@@ -6,12 +6,12 @@ def build_recommendation_prompt(symptoms, patient_context, materia_context, simi
     similar_cases_text = ""
     for i, case in enumerate(similar_cases, 1):
         similar_cases_text += (
-            f"Case {i}: Symptoms: {case.get('symptoms_summary')} | "
+            f"Case {i}: {case.get('text', '')} | "
             f"Remedy: {case.get('remedy')} | Outcome: {case.get('outcome')}\n"
         )
 
-    materia_text = "\n".join([f"- [{r['source']}]: {r['content']}" for r in materia_context])
-    notes_text   = "\n".join([f"- [{n['doc_id']}]: {n['content']}" for n in doctor_notes])
+    materia_text = "\n".join([f"- [{r.get('source')} / {r.get('remedy')}]: {r.get('text', '')}" for r in materia_context])
+    notes_text   = "\n".join([f"- [{n.get('title') or n.get('doc_id')}]: {n.get('text', '')}" for n in doctor_notes])
 
     return f"""
 PATIENT CONTEXT:

@@ -1,11 +1,12 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import type { Doctor } from "../../services/api/endpoints";
 
 interface AuthState {
   isAuthenticated: boolean;
-  doctor: any | null;
+  doctor: Doctor | null;
   token: string | null;
-  login: (doctor: any, token: string) => void;
+  login: (doctor: Doctor, token: string) => void;
   logout: () => void;
 }
 

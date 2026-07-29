@@ -3,7 +3,9 @@ from jose import jwt
 from passlib.context import CryptContext
 from app.core.config import settings
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# pbkdf2_sha256: pure-Python, no native bcrypt dependency (avoids the passlib/bcrypt
+# version incompatibility). bcrypt kept as a verify-only scheme for forward migration.
+pwd_context = CryptContext(schemes=["pbkdf2_sha256", "bcrypt"], deprecated="auto")
 
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)

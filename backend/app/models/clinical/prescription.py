@@ -2,7 +2,7 @@
 Prescription — what the doctor actually prescribes (may differ from AI suggestion)
 Stored separately from AI recommendation for legal clarity
 """
-from sqlalchemy import Column, String, DateTime, Text, ForeignKey, Boolean, JSON
+from sqlalchemy import Column, String, DateTime, Text, ForeignKey, Boolean, JSON, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from app.core.database import Base
@@ -26,5 +26,5 @@ class Prescription(Base):
     whatsapp_sent   = Column(Boolean, default=False)
     whatsapp_sent_at= Column(DateTime)
 
-    created_at      = Column(DateTime)
+    created_at      = Column(DateTime(timezone=True), server_default=func.now())
     visit           = relationship("Visit", back_populates="prescription")

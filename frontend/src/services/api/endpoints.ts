@@ -1,0 +1,86 @@
+import apiClient from "./client";
+
+// ---- Types ----
+export interface Doctor {
+  id: string; full_name: string; email: string; clinic_name?: string;
+  registration_no?: string; qualifications?: string[]; languages?: string[];
+}
+export interface Patient {
+  id: string; full_name: string; date_of_birth: string; gender: string;
+  phone: string; email?: string; language_pref?: string; consent_given?: boolean;
+}
+export interface Visit {
+  id: string; patient_id: string; doctor_id: string; status: string;
+  chief_complaint?: string; ai_confidence_score?: string; doctor_approved?: boolean;
+}
+export interface RedFlag { severity: string; message: string; matched: string[]; }
+export interface Recommendation {
+  recommendation: string; red_flags: RedFlag[];
+  sources: { materia_medica: string[]; similar_cases: string[]; doctor_notes: string[] };
+  confidence: string; disclaimer: string;
+}
+export interface Remedy {
+  name: string; potency?: string; dosage?: string; frequency?: string; duration?: string;
+}
+export interface Prescription {
+  id: string; visit_id: string; remedies: Remedy[]; dietary_advice?: string;
+  precautions?: string; whatsapp_sent?: boolean;
+}
+export interface FollowUp {
+  id: string; visit_id: string; patient_id: string; followup_type: string;
+  scheduled_at: string; responded_at?: string; outcome: string; needs_escalation?: boolean;
+}
+export interface AnalyticsSummary {
+  total_patients: number; total_visits: number; visits_last_30d: number;
+  outcome_distribution: Record<string, number>; improvement_rate_pct: number | null;
+  top_remedies: [string, number][]; pending_followups: number;
+}
+
+// ---- Auth ----
+export const authApi = {
+  register: (data: any) => apiClient.post<Doctor>("/auth/register", data),
+  login: (email: string, password: string) =>
+    apiClient.post<{ access_token: string }>("/auth/login-json", { email, password }),
+  me: () => apiClient.get<Doctor>("/auth/me"),
+};
+
+// ---- Patients ----
+export const patientApi = {
+  list: (q = "") => apiClient.get<Patient[]>("/patients", { params: { q } }),
+  create: (data: any) => apiClient.post<Patient>("/patients", data),
+  get: (id: string) => apiClient.get<Patient>(`/patients/${id}`),
+};
+
+// ---- Visits ----
+export const visitApi = {
+  create: (patient_id: string, chief_complaint = "") =>
+    apiClient.post<Visit>("/visits", { patient_id, chief_complaint }),
+  get: (id: string) => apiClient.get<Visit>(`/visits/${id}`),
+};
+
+// ---- Consultation ----
+export const consultationApi = {
+  clarify: (visitId: string, symptoms: any) =>
+    apiClient.post<{ questions: string[] }>(`/consultations/${visitId}/clarify`, symptoms),
+  recommend: (visitId: string, symptoms: any) =>
+    apiClient.post<Recommendation>(`/consultations/${visitId}/recommend`, symptoms),
+  approve: (visitId: string, approval: any) =>
+    apiClient.post<Prescription>(`/consultations/${visitId}/approve`, approval),
+};
+
+// ---- Prescriptions ----
+export const prescriptionApi = {
+  pdfUrl: (id: string) => `/api/v1/prescriptions/${id}/pdf`,
+  sendWhatsapp: (id: string) => apiClient.post<Prescription>(`/prescriptions/${id}/send-whatsapp`),
+};
+
+// ---- Follow-ups ----
+export const followupApi = {
+  list: (dueOnly = false) => apiClient.get<FollowUp[]>("/followups", { params: { due_only: dueOnly } }),
+  respond: (id: string, data: any) => apiClient.post<FollowUp>(`/followups/${id}/respond`, data),
+};
+
+// ---- Analytics ----
+export const analyticsApi = {
+  summary: () => apiClient.get<AnalyticsSummary>("/analytics/summary"),
+};

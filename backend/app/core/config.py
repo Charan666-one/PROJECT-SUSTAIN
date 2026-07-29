@@ -4,7 +4,8 @@ from typing import List
 class Settings(BaseSettings):
     APP_ENV: str = "development"
     SECRET_KEY: str = "changeme"
-    ALLOWED_ORIGINS: List[str] = ["http://localhost:3000"]
+    # Comma-separated list of allowed CORS origins (see `cors_origins`).
+    ALLOWED_ORIGINS: str = "http://localhost:3000"
     POSTGRES_HOST: str = "localhost"
     POSTGRES_PORT: int = 5432
     POSTGRES_DB: str = "homoeo_cdss"
@@ -16,9 +17,10 @@ class Settings(BaseSettings):
     QDRANT_COLLECTION_CLINIC_CASES: str = "clinic_cases"
     QDRANT_COLLECTION_DOCTOR_NOTES: str = "doctor_notes"
     ANTHROPIC_API_KEY: str = ""
-    LLM_MODEL: str = "claude-sonnet-4-6"
+    LLM_MODEL: str = "claude-sonnet-5"
     LLM_MAX_TOKENS: int = 2048
     EMBEDDING_MODEL: str = "sentence-transformers/all-MiniLM-L6-v2"
+    EMBEDDING_DIM: int = 384
     WHISPER_MODEL: str = "medium"
     WHATSAPP_API_URL: str = ""
     WHATSAPP_PHONE_ID: str = ""
@@ -27,7 +29,12 @@ class Settings(BaseSettings):
     DATA_RETENTION_DAYS: int = 2555
     CONSENT_VERSION: str = "1.0"
 
+    @property
+    def cors_origins(self) -> List[str]:
+        return [o.strip() for o in self.ALLOWED_ORIGINS.split(",") if o.strip()]
+
     class Config:
         env_file = ".env"
+        extra = "ignore"
 
 settings = Settings()

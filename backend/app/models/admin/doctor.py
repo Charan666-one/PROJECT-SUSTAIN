@@ -1,9 +1,8 @@
 """
 Doctor / practitioner account model
 """
-from sqlalchemy import Column, String, Boolean, DateTime, Text, JSON
+from sqlalchemy import Column, String, Boolean, DateTime, Text, JSON, func
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import relationship
 from app.core.database import Base
 import uuid
 
@@ -21,5 +20,5 @@ class Doctor(Base):
     clinic_address  = Column(Text)
     languages       = Column(JSON, default=["en"])
     is_active       = Column(Boolean, default=True)
-    created_at      = Column(DateTime)
-    last_login      = Column(DateTime)
+    created_at      = Column(DateTime(timezone=True), server_default=func.now())
+    last_login      = Column(DateTime(timezone=True))

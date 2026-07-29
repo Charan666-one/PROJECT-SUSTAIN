@@ -6,10 +6,15 @@ __pycache__/
 .Python
 env/
 venv/
+.venv/
 *.egg-info/
 dist/
 build/
 .pytest_cache/
+*.log
+
+# Generated local vector store (seeded via scripts/seed/index_knowledge_base.py)
+knowledge_base/_index/
 
 # Node
 node_modules/

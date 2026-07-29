@@ -15,13 +15,23 @@ RED_FLAG_PATTERNS = [
     {"pattern": ["suicidal thoughts", "self harm"],                    "severity": "URGENT",   "message": "Mental health emergency — refer to crisis support immediately"},
 ]
 
+def _flatten(value) -> str:
+    """Recursively collect every string value from a nested symptom payload."""
+    if value is None:
+        return ""
+    if isinstance(value, str):
+        return value
+    if isinstance(value, dict):
+        return " ".join(_flatten(v) for v in value.values())
+    if isinstance(value, (list, tuple)):
+        return " ".join(_flatten(v) for v in value)
+    return str(value)
+
+
 class RedFlagDetector:
     async def scan(self, symptoms: dict) -> list:
         detected = []
-        symptom_text = " ".join([
-            str(symptoms.get("structured_symptoms", "")),
-            str(symptoms.get("chief_complaint", "")),
-        ]).lower()
+        symptom_text = _flatten(symptoms).lower()
 
         for flag in RED_FLAG_PATTERNS:
             if any(p in symptom_text for p in flag["pattern"]):
