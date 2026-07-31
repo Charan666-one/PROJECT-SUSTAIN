@@ -33,13 +33,28 @@ cd frontend && npm install && npm run dev   # http://localhost:5173
 cd backend && pytest
 ```
 
+### The differentiator: Recovery Surveillance
+We don't replace the doctor and we don't stop at a one-shot recommendation. After
+a prescription is approved, the patient enters **surveillance** — tracked until they
+recover. The engine ([`services/surveillance.py`](backend/app/services/surveillance.py)):
+- Builds a recovery trajectory from each check-in's wellness score + outcome.
+- Classifies anomalies: **aggravation** (expected homeopathic dip), **plateau**,
+  **non-response**, **relapse**, **worsening** — each with a triage severity.
+- **Adaptively schedules the next check-in** (1 day if worsening, ~5 if improving)
+  so surveillance continues until recovery or the doctor closes the episode.
+- Recommends the next action and offers a remedy **re-suggestion** — as decision
+  support. The doctor takes every action; nothing is autonomous.
+
+See `GET /api/v1/surveillance` (the clinic watchlist) and the Surveillance page in the UI.
+
 ### Implementation status
-- **Working end-to-end:** auth, patients (DPDP consent), visits, RAG recommend →
-  red-flag safety gate → doctor approval → prescription PDF → WhatsApp → Day 3/7/30
-  follow-ups → outcome-fed learning loop → clinic analytics. Immutable hash-chained
-  audit log on every clinical decision.
+- **Working end-to-end:** auth, multi-tenant patients (DPDP consent), visits, RAG
+  recommend → red-flag safety gate → doctor approval → prescription PDF → WhatsApp →
+  Day 3/7/30 follow-ups → **recovery surveillance with anomaly detection + adaptive
+  scheduling + remedy re-suggestion** → outcome-fed learning loop → clinic analytics.
+  Immutable hash-chained audit log on every clinical decision.
 - **Stubbed / next:** voice (Whisper wiring), Celery auto-send of follow-ups,
-  richer patient timeline UI, production Qdrant + real materia medica corpus.
+  Alembic migrations, production Qdrant + a full materia medica corpus.
 
 ### Architecture
 - **Frontend**: React 18 + TypeScript + Vite + PWA (offline-first)

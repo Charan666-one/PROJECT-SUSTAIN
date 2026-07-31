@@ -79,6 +79,21 @@ input:focus, textarea:focus, select:focus { outline: 2px solid var(--primary); b
 .badge.medium { background: var(--warn-bg); color: var(--warn); }
 .badge.low { background: #eee; color: var(--muted); }
 
+/* Severity chips (surveillance) */
+.sev { display:inline-block; padding:.12rem .5rem; border-radius:999px; font-size:.7rem; font-weight:800; text-transform:uppercase; letter-spacing:.03em; }
+.sev.urgent { background: var(--danger-bg); color: var(--danger); }
+.sev.watch { background: var(--warn-bg); color: var(--warn); }
+.sev.info { background: var(--ok-bg); color: var(--ok); }
+.episode { border-left: 4px solid var(--border); }
+.episode.urgent { border-left-color: var(--danger); }
+.episode.watch { border-left-color: var(--warn); }
+.episode.info { border-left-color: var(--ok); }
+.trend-improving { color: var(--ok); font-weight:700; }
+.trend-worsening { color: var(--danger); font-weight:700; }
+.trend-plateau { color: var(--warn); font-weight:700; }
+.trend-recovered { color: var(--primary); font-weight:700; }
+.trend-pending { color: var(--muted); font-weight:700; }
+
 /* Red flag */
 .redflag {
   background: var(--danger-bg); border: 1px solid var(--danger); color: var(--danger);

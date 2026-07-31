@@ -38,6 +38,11 @@ class Visit(Base):
     ai_confidence_score = Column(String(10))  # high / medium / low
     ai_sources_cited    = Column(JSON)
 
+    # Recovery surveillance: active until the patient recovers or the doctor closes it.
+    surveillance_status = Column(String(20), default="active")   # active / recovered / closed
+    recovery_trend      = Column(String(20))                     # improving / plateau / worsening / recovered / pending
+    recovery_anomaly    = Column(String(20))                     # latest anomaly flag (see services.surveillance)
+
     doctor_notes        = Column(Text)
     doctor_approved     = Column(Boolean, default=False)
     doctor_approved_at  = Column(DateTime)

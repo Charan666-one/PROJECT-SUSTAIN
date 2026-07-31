@@ -78,6 +78,31 @@ async def get_recommendation(
     return result
 
 
+@router.post("/{visit_id}/re-recommend", response_model=RecommendationOut)
+async def re_recommend(
+    visit_id: str,
+    symptoms: SymptomInput,
+    db: AsyncSession = Depends(get_db),
+    doctor: Doctor = Depends(get_current_doctor),
+):
+    """
+    Follow-up remedy suggestion during the recovery period (e.g. after a plateau
+    or relapse the surveillance engine flags). Runs the RAG engine on the updated
+    symptom picture — decision support only; the doctor starts a new visit to
+    actually prescribe.
+    """
+    visit = await _load_visit(db, visit_id, doctor)
+    engine = RAGEngine(doctor_id=str(doctor.id), clinic_id=str(doctor.id))
+    result = await engine.generate_recommendation(symptoms=symptoms.model_dump(), patient_context={})
+    await record_event(
+        db, event_type="AI_RE_RECOMMENDATION_GENERATED",
+        doctor_id=str(doctor.id), patient_id=str(visit.patient_id), visit_id=str(visit.id),
+        payload={"confidence": result["confidence"]},
+    )
+    await db.commit()
+    return result
+
+
 @router.post("/{visit_id}/clarify", response_model=ClarifyOut)
 async def get_clarifying_questions(
     visit_id: str,

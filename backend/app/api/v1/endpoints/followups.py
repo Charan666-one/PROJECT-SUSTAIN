@@ -20,6 +20,7 @@ from app.schemas.followup import FollowUpRespond, FollowUpOut
 from app.rag.indexer import index_clinic_case
 from app.rag.retrievers.base import symptoms_to_query
 from app.services.audit import record_event
+from app.services.surveillance_ops import assess_and_advance
 from app.api.dependencies.auth import get_current_doctor
 
 router = APIRouter()
@@ -81,11 +82,17 @@ async def respond_followup(
             )
             fu.indexed_to_vectordb = True
 
+    # Surveillance: assess the recovery trajectory and adaptively schedule the
+    # next check-in (continues until recovery or the doctor closes the episode).
+    assessment = await assess_and_advance(db, visit)
+
     await record_event(
         db, event_type="FOLLOWUP_OUTCOME_RECORDED",
         doctor_id=str(doctor.id), patient_id=str(fu.patient_id), visit_id=str(fu.visit_id),
         payload={"outcome": data.outcome, "symptom_score": data.symptom_score,
-                 "escalation": fu.needs_escalation},
+                 "escalation": fu.needs_escalation,
+                 "trend": assessment.trend, "anomaly": assessment.anomaly,
+                 "recovered": assessment.recovered},
     )
     await db.commit()
     await db.refresh(fu)

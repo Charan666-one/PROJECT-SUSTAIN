@@ -30,6 +30,13 @@ export interface FollowUp {
   id: string; visit_id: string; patient_id: string; followup_type: string;
   scheduled_at: string; responded_at?: string; outcome: string; needs_escalation?: boolean;
 }
+export interface SurveillanceEpisode {
+  visit_id: string; patient_id: string; patient_name: string; chief_complaint?: string;
+  surveillance_status: string; trend: string; anomaly: string; severity: string;
+  recovered: boolean; days_under_surveillance: number; latest_score?: number | null;
+  recommended_action: string; suggest_re_evaluation: boolean; rationale: string;
+  next_check_at?: string | null; doctor_in_loop: boolean;
+}
 export interface AnalyticsSummary {
   total_patients: number; total_visits: number; visits_last_30d: number;
   outcome_distribution: Record<string, number>; improvement_rate_pct: number | null;
@@ -64,8 +71,17 @@ export const consultationApi = {
     apiClient.post<{ questions: string[] }>(`/consultations/${visitId}/clarify`, symptoms),
   recommend: (visitId: string, symptoms: any) =>
     apiClient.post<Recommendation>(`/consultations/${visitId}/recommend`, symptoms),
+  reRecommend: (visitId: string, symptoms: any) =>
+    apiClient.post<Recommendation>(`/consultations/${visitId}/re-recommend`, symptoms),
   approve: (visitId: string, approval: any) =>
     apiClient.post<Prescription>(`/consultations/${visitId}/approve`, approval),
+};
+
+// ---- Recovery surveillance ----
+export const surveillanceApi = {
+  list: (includeRecovered = false) =>
+    apiClient.get<SurveillanceEpisode[]>("/surveillance", { params: { include_recovered: includeRecovered } }),
+  close: (visitId: string) => apiClient.post<SurveillanceEpisode>(`/surveillance/${visitId}/close`),
 };
 
 // ---- Prescriptions ----
