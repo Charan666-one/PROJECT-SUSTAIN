@@ -12,6 +12,9 @@ asyncpg>=0.30
 greenlet
 pydantic>=2
 pydantic-settings>=2
+alembic
+celery
+redis
 python-jose[cryptography]
 passlib
 bcrypt

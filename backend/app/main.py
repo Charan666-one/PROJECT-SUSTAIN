@@ -5,7 +5,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.routers import api_router
 from app.core.config import settings
-from app.core.database import init_db
 
 app = FastAPI(
     title="Homoeo CDSS API",
@@ -25,9 +24,8 @@ app.add_middleware(
 
 app.include_router(api_router, prefix="/api/v1")
 
-@app.on_event("startup")
-async def startup():
-    await init_db()
+# Schema is managed by Alembic migrations (`alembic upgrade head`), not create_all,
+# so schema changes never drop data. run_local.sh applies migrations on start.
 
 @app.get("/health")
 async def health_check():

@@ -31,6 +31,9 @@ source backend/.venv/bin/activate
 pip install -q --upgrade pip
 pip install -q -r backend/requirements-dev.txt
 
+echo "==> Applying database migrations (alembic upgrade head)"
+( cd backend && alembic upgrade head )
+
 echo "==> Seeding materia medica knowledge base"
 PYTHONPATH=backend python scripts/seed/index_knowledge_base.py
 

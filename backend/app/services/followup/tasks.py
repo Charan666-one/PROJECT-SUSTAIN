@@ -1,23 +1,15 @@
 """
-Celery tasks — automated follow-up scheduling and execution
+Celery tasks — automated surveillance check-in delivery.
+
+The real work lives in the pure-async ``send_due_checkins`` (dispatch.py); these
+are thin Celery wrappers so the same logic runs from beat OR a one-off script.
 """
+import asyncio
 from app.core.celery_app import celery_app
-from app.services.whatsapp.sender import WhatsAppService
-from datetime import datetime, timedelta
+from app.services.followup.dispatch import send_due_checkins
 
-whatsapp = WhatsAppService()
 
-@celery_app.task(name="app.services.followup.tasks.send_day3_checkin")
-def send_day3_checkin():
-    """Find all prescriptions from 3 days ago and send check-in"""
-    # Query DB for prescriptions created 3 days ago with no day-3 followup sent
-    # For each: send WhatsApp + mark followup as sent
-    pass
-
-@celery_app.task(name="app.services.followup.tasks.send_day7_reminder")
-def send_day7_reminder():
-    pass
-
-@celery_app.task(name="app.services.followup.tasks.send_day30_outcome_survey")
-def send_day30_outcome_survey():
-    pass
+@celery_app.task(name="app.services.followup.tasks.dispatch_due_checkins")
+def dispatch_due_checkins():
+    """Send every surveillance check-in that has fallen due (Day 3/7/30 + adaptive)."""
+    return asyncio.run(send_due_checkins())

@@ -13,8 +13,13 @@ celery_app = Celery(
 )
 
 celery_app.conf.beat_schedule = {
-    "followup-day3":   {"task": "app.services.followup.tasks.send_day3_checkin",        "schedule": 3600.0},
-    "followup-day7":   {"task": "app.services.followup.tasks.send_day7_reminder",        "schedule": 3600.0},
-    "followup-day30":  {"task": "app.services.followup.tasks.send_day30_outcome_survey", "schedule": 3600.0},
-    "analytics-daily": {"task": "app.services.analytics.tasks.refresh_clinic_dashboard", "schedule": 86400.0},
+    # One task drains all due check-ins (fixed Day 3/7/30 + adaptive surveillance).
+    "dispatch-due-checkins": {
+        "task": "app.services.followup.tasks.dispatch_due_checkins",
+        "schedule": 900.0,   # every 15 minutes
+    },
+    "analytics-daily": {
+        "task": "app.services.analytics.tasks.refresh_clinic_dashboard",
+        "schedule": 86400.0,
+    },
 }

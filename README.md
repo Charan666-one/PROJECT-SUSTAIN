@@ -15,13 +15,18 @@ instead of a generated answer; **no Qdrant** → uses a local file-backed vector
 clinical flow on just Python + Postgres.
 
 ```bash
+# Easiest: one command does DB + migrations + seed + server
+./scripts/run_local.sh                 # http://localhost:8000/api/docs
+
+# ...or step by step:
 # 1. Backend
 cd backend && python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements-dev.txt    # lightweight; use requirements.txt for prod
 createdb homoeo_dev
 export POSTGRES_DB=homoeo_dev POSTGRES_USER=$(whoami) POSTGRES_PASSWORD=""
-export ANTHROPIC_API_KEY=""          # optional — set to enable LLM generation
-uvicorn app.main:app --reload        # http://localhost:8000/api/docs
+export ANTHROPIC_API_KEY=""            # optional — set to enable LLM generation
+alembic upgrade head                   # create/upgrade the schema (see Migrations)
+uvicorn app.main:app --reload
 
 # 2. Seed the materia medica knowledge base
 cd .. && PYTHONPATH=backend python scripts/seed/index_knowledge_base.py
@@ -31,6 +36,25 @@ cd frontend && npm install && npm run dev   # http://localhost:5173
 
 # 4. Tests
 cd backend && pytest
+```
+
+### Migrations (Alembic)
+Schema is managed by Alembic — `create_all` is not used at runtime, so schema
+changes never drop data. `run_local.sh` runs `alembic upgrade head` for you.
+```bash
+cd backend
+alembic upgrade head                          # apply migrations
+alembic revision --autogenerate -m "message"  # after changing a model
+```
+
+### Sending surveillance check-ins
+Due check-ins (fixed Day 3/7/30 + adaptive) are delivered by
+`app.services.followup.dispatch.send_due_checkins`. Run it either way:
+```bash
+# One-off / cron (no broker needed):
+PYTHONPATH=backend python scripts/send_checkins.py
+# Or via Celery (needs Redis) — beat fires every 15 min:
+cd backend && celery -A app.core.celery_app worker -B --loglevel=info
 ```
 
 ### The differentiator: Recovery Surveillance
@@ -52,9 +76,10 @@ See `GET /api/v1/surveillance` (the clinic watchlist) and the Surveillance page 
   recommend → red-flag safety gate → doctor approval → prescription PDF → WhatsApp →
   Day 3/7/30 follow-ups → **recovery surveillance with anomaly detection + adaptive
   scheduling + remedy re-suggestion** → outcome-fed learning loop → clinic analytics.
-  Immutable hash-chained audit log on every clinical decision.
-- **Stubbed / next:** voice (Whisper wiring), Celery auto-send of follow-ups,
-  Alembic migrations, production Qdrant + a full materia medica corpus.
+  Immutable hash-chained audit log on every clinical decision. Alembic migrations;
+  Celery/cron delivery of due check-ins.
+- **Stubbed / next:** voice (Whisper wiring), production Qdrant + a full materia
+  medica corpus, patient recovery-timeline chart, richer analytics.
 
 ### Architecture
 - **Frontend**: React 18 + TypeScript + Vite + PWA (offline-first)
