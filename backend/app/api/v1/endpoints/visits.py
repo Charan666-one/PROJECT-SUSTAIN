@@ -21,7 +21,9 @@ async def create_visit(
     db: AsyncSession = Depends(get_db),
     doctor: Doctor = Depends(get_current_doctor),
 ):
-    patient = (await db.execute(select(Patient).where(Patient.id == data.patient_id))).scalar_one_or_none()
+    patient = (await db.execute(
+        select(Patient).where(Patient.id == data.patient_id, Patient.clinic_id == doctor.id)
+    )).scalar_one_or_none()
     if not patient:
         raise HTTPException(status_code=404, detail="Patient not found")
 

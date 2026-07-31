@@ -18,7 +18,9 @@ router = APIRouter()
 
 @router.get("/summary")
 async def summary(db: AsyncSession = Depends(get_db), doctor: Doctor = Depends(get_current_doctor)):
-    total_patients = (await db.execute(select(func.count(Patient.id)))).scalar() or 0
+    total_patients = (await db.execute(
+        select(func.count(Patient.id)).where(Patient.clinic_id == doctor.id)
+    )).scalar() or 0
     total_visits = (await db.execute(
         select(func.count(Visit.id)).where(Visit.doctor_id == doctor.id)
     )).scalar() or 0

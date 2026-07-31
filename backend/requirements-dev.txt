@@ -1,0 +1,23 @@
+# Lightweight deps to run the full clinical flow locally (no PyTorch).
+# Unpinned on purpose so pip resolves versions with wheels for your Python
+# (the production requirements.txt pins asyncpg==0.29 which has no Python 3.13
+# wheel; it works in Docker because that image uses Python 3.11).
+#
+# The app degrades gracefully: no Qdrant -> local file vector store,
+# no sentence-transformers -> hashing embedder, no API key -> returns evidence.
+fastapi
+uvicorn[standard]
+sqlalchemy>=2.0
+asyncpg>=0.30
+greenlet
+pydantic>=2
+pydantic-settings>=2
+python-jose[cryptography]
+passlib
+bcrypt
+httpx
+email-validator
+python-multipart
+anthropic
+pytest
+pytest-asyncio

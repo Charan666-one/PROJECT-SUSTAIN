@@ -25,11 +25,14 @@ async def create_patient(
     if not data.consent_given:
         raise HTTPException(status_code=400, detail="Patient consent is required (DPDP Act 2023)")
 
-    existing = (await db.execute(select(Patient).where(Patient.phone == data.phone))).scalar_one_or_none()
+    existing = (await db.execute(
+        select(Patient).where(Patient.clinic_id == doctor.id, Patient.phone == data.phone)
+    )).scalar_one_or_none()
     if existing:
-        raise HTTPException(status_code=409, detail="A patient with this phone number already exists")
+        raise HTTPException(status_code=409, detail="A patient with this phone number already exists in your clinic")
 
     patient = Patient(
+        clinic_id=doctor.id,
         full_name=data.full_name,
         date_of_birth=data.date_of_birth,
         gender=data.gender,
@@ -59,7 +62,7 @@ async def list_patients(
     db: AsyncSession = Depends(get_db),
     doctor: Doctor = Depends(get_current_doctor),
 ):
-    stmt = select(Patient).order_by(Patient.full_name)
+    stmt = select(Patient).where(Patient.clinic_id == doctor.id).order_by(Patient.full_name)
     if q:
         like = f"%{q}%"
         stmt = stmt.where(Patient.full_name.ilike(like) | Patient.phone.ilike(like))
@@ -72,7 +75,9 @@ async def get_patient(
     db: AsyncSession = Depends(get_db),
     doctor: Doctor = Depends(get_current_doctor),
 ):
-    patient = (await db.execute(select(Patient).where(Patient.id == patient_id))).scalar_one_or_none()
+    patient = (await db.execute(
+        select(Patient).where(Patient.id == patient_id, Patient.clinic_id == doctor.id)
+    )).scalar_one_or_none()
     if not patient:
         raise HTTPException(status_code=404, detail="Patient not found")
     return patient
@@ -85,7 +90,9 @@ async def update_patient(
     db: AsyncSession = Depends(get_db),
     doctor: Doctor = Depends(get_current_doctor),
 ):
-    patient = (await db.execute(select(Patient).where(Patient.id == patient_id))).scalar_one_or_none()
+    patient = (await db.execute(
+        select(Patient).where(Patient.id == patient_id, Patient.clinic_id == doctor.id)
+    )).scalar_one_or_none()
     if not patient:
         raise HTTPException(status_code=404, detail="Patient not found")
     for field, value in data.model_dump(exclude_unset=True).items():
