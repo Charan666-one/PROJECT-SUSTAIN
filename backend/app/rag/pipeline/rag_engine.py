@@ -13,9 +13,22 @@ import asyncio
 from app.rag.retrievers.materia_medica import MateriaMedicaRetriever
 from app.rag.retrievers.clinic_cases import ClinicCaseRetriever
 from app.rag.retrievers.doctor_notes import DoctorNotesRetriever
+from app.rag.retrievers.base import symptoms_to_query
 from app.rag.prompts.recommendation_prompt import build_recommendation_prompt
 from app.ml.red_flag.detector import RedFlagDetector
 from app.core.config import settings
+
+_STOPWORDS = {"the", "and", "with", "from", "that", "this", "have", "worse", "better", "pain", "after"}
+
+
+def _terms(text: str) -> set:
+    return {w for w in "".join(c if c.isalnum() else " " for c in (text or "").lower()).split()
+            if len(w) > 3 and w not in _STOPWORDS}
+
+
+def _snippet(text: str, n: int = 180) -> str:
+    text = (text or "").strip()
+    return text if len(text) <= n else text[:n].rsplit(" ", 1)[0] + "…"
 
 SYSTEM_PROMPT = (
     "You are a clinical decision support assistant for a licensed homeopathic practitioner. "
@@ -64,6 +77,34 @@ class RAGEngine:
                 "doctor_notes": [r.get("doc_id") for r in doctor_notes],
             },
             "confidence": self._compute_confidence(materia_context, similar_cases),
+            # Explainable AI: WHY each source matched — the doctor never sees a
+            # recommendation without the supporting evidence behind it.
+            "evidence": self._build_evidence(symptoms, materia_context, similar_cases, doctor_notes),
+        }
+
+    def _build_evidence(self, symptoms, materia_context, similar_cases, doctor_notes) -> dict:
+        q_terms = _terms(symptoms_to_query(symptoms))
+        return {
+            "materia_medica": [{
+                "remedy": r.get("remedy"),
+                "source": r.get("source"),
+                "score": r.get("score"),
+                "snippet": _snippet(r.get("text", "")),
+                "matched_terms": sorted(q_terms & _terms(r.get("text", ""))),
+            } for r in materia_context],
+            "similar_cases": [{
+                "case_id": r.get("case_id"),
+                "remedy": r.get("remedy"),
+                "outcome": r.get("outcome"),
+                "score": r.get("score"),
+                "snippet": _snippet(r.get("text", "")),
+            } for r in similar_cases],
+            "doctor_notes": [{
+                "doc_id": r.get("doc_id"),
+                "title": r.get("title"),
+                "score": r.get("score"),
+                "snippet": _snippet(r.get("text", "")),
+            } for r in doctor_notes],
         }
 
     async def _generate(self, prompt: str) -> str:

@@ -1,5 +1,17 @@
-# Homoeo CDSS
-## Intelligent Homeopathic Clinical Decision Support & Patient Management System
+# SUSTAIN
+## A Clinic Operating System — doctor-facing CDSS for AYUSH practices
+
+SUSTAIN is a modular clinic OS: the AI is a decision-support assistant, the
+**doctor is always the final decision maker**. The frontend is organized into
+feature modules (`src/features/{auth,doctor,patients,consultation,surveillance,
+followups,knowledge,analytics,audit,settings}`) behind a Doctor Portal shell
+(sidebar + global search). New backend capabilities are added as independent,
+additive modules — existing APIs stay compatible.
+
+**Doctor Portal modules:** Dashboard · Patients (+ treatment timeline) ·
+Consultations · **Explainable AI** (matched symptoms, evidence, sources) ·
+Prescriptions · Follow-ups · Recovery Surveillance · Knowledge Base · Analytics ·
+Audit Log (tamper-evident) · Settings · Global Search.
 
 ### Quick Start (Docker)
 ```bash

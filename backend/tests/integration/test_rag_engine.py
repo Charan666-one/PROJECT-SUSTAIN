@@ -9,9 +9,10 @@ async def test_engine_runs_without_api_key_and_returns_contract():
         symptoms={"chief_complaint": "anxiety with burning pains worse after midnight"},
         patient_context={"age": 40, "gender": "female"},
     )
-    assert set(result) == {"recommendation", "red_flags", "sources", "confidence"}
+    assert {"recommendation", "red_flags", "sources", "confidence", "evidence"} <= set(result)
     assert result["confidence"] in {"high", "medium", "low"}
     assert isinstance(result["recommendation"], str) and result["recommendation"]
+    assert "materia_medica" in result["evidence"]
 
 
 @pytest.mark.asyncio

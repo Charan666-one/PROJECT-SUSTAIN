@@ -9,9 +9,14 @@ from app.core.database import get_db
 from app.core.config import settings
 from app.models.admin.doctor import Doctor
 from app.models.clinical.patient import Patient
+from app.models.clinical.visit import Visit
+from app.models.clinical.prescription import Prescription
+from app.models.clinical.followup import FollowUp
 from app.schemas.patient import PatientCreate, PatientUpdate, PatientOut
 from app.api.dependencies.auth import get_current_doctor
 from app.services.audit import record_event
+
+from sqlalchemy import desc
 
 router = APIRouter()
 
@@ -81,6 +86,69 @@ async def get_patient(
     if not patient:
         raise HTTPException(status_code=404, detail="Patient not found")
     return patient
+
+
+@router.get("/{patient_id}/timeline")
+async def patient_timeline(
+    patient_id: str,
+    db: AsyncSession = Depends(get_db),
+    doctor: Doctor = Depends(get_current_doctor),
+):
+    """Chronological treatment journey for one patient (clinic-scoped)."""
+    patient = (await db.execute(
+        select(Patient).where(Patient.id == patient_id, Patient.clinic_id == doctor.id)
+    )).scalar_one_or_none()
+    if not patient:
+        raise HTTPException(status_code=404, detail="Patient not found")
+
+    events = []
+    if patient.consent_at:
+        events.append({"type": "registered", "label": "Patient registered",
+                       "at": patient.consent_at.isoformat(), "ref_id": str(patient.id)})
+
+    visits = list((await db.execute(
+        select(Visit).where(Visit.patient_id == patient.id).order_by(Visit.scheduled_at)
+    )).scalars().all())
+    for v in visits:
+        when = v.completed_at or v.started_at or v.scheduled_at
+        events.append({
+            "type": "consultation", "label": "Consultation",
+            "at": when.isoformat() if when else None, "ref_id": str(v.id),
+            "meta": {"chief_complaint": v.chief_complaint,
+                     "status": getattr(v.status, "value", v.status),
+                     "surveillance_status": v.surveillance_status,
+                     "recovery_trend": v.recovery_trend, "approved": v.doctor_approved},
+        })
+        presc = (await db.execute(
+            select(Prescription).where(Prescription.visit_id == v.id)
+        )).scalar_one_or_none()
+        if presc:
+            events.append({
+                "type": "prescription", "label": "Prescription",
+                "at": presc.created_at.isoformat() if presc.created_at else None,
+                "ref_id": str(presc.id),
+                "meta": {"remedies": [r.get("name") for r in (presc.remedies or [])]},
+            })
+        fus = list((await db.execute(
+            select(FollowUp).where(FollowUp.visit_id == v.id).order_by(FollowUp.scheduled_at)
+        )).scalars().all())
+        for fu in fus:
+            events.append({
+                "type": "followup",
+                "label": f"Follow-up ({fu.followup_type.value if hasattr(fu.followup_type,'value') else fu.followup_type})",
+                "at": (fu.responded_at or fu.scheduled_at).isoformat(),
+                "ref_id": str(fu.id),
+                "meta": {"responded": fu.responded_at is not None,
+                         "outcome": getattr(fu.outcome, "value", fu.outcome),
+                         "wellness": fu.symptom_score},
+            })
+        if v.surveillance_status == "recovered":
+            events.append({"type": "recovered", "label": "Recovered",
+                           "at": v.completed_at.isoformat() if v.completed_at else None,
+                           "ref_id": str(v.id)})
+
+    events.sort(key=lambda e: e.get("at") or "")
+    return {"patient": {"id": str(patient.id), "full_name": patient.full_name}, "events": events}
 
 
 @router.patch("/{patient_id}", response_model=PatientOut)

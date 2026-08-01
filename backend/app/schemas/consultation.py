@@ -13,6 +13,7 @@ class RecommendationOut(BaseModel):
     red_flags: List[RedFlag] = []
     sources: dict = {}
     confidence: str = "low"
+    evidence: dict = {}   # explainable AI: matched terms + snippets per source
     disclaimer: str = (
         "AI-generated decision support. Not a prescription. "
         "A licensed practitioner must review and approve before any treatment."

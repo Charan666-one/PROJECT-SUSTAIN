@@ -7,9 +7,9 @@ from app.api.v1.routers import api_router
 from app.core.config import settings
 
 app = FastAPI(
-    title="Homoeo CDSS API",
-    description="Intelligent Homeopathic Clinical Decision Support System",
-    version="1.0.0",
+    title="SUSTAIN — Clinical Decision Support API",
+    description="SUSTAIN: doctor-facing CDSS for AYUSH clinics. AI assists; the doctor decides.",
+    version="2.0.0",
     docs_url="/api/docs",
     redoc_url="/api/redoc",
 )

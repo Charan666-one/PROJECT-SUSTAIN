@@ -14,11 +14,17 @@ export interface Visit {
   chief_complaint?: string; ai_confidence_score?: string; doctor_approved?: boolean;
 }
 export interface RedFlag { severity: string; message: string; matched: string[]; }
+export interface EvidenceMateria { remedy?: string; source?: string; score?: number; snippet: string; matched_terms: string[]; }
+export interface EvidenceCase { case_id?: string; remedy?: string; outcome?: string; score?: number; snippet: string; }
+export interface EvidenceNote { doc_id?: string; title?: string; score?: number; snippet: string; }
+export interface Evidence { materia_medica: EvidenceMateria[]; similar_cases: EvidenceCase[]; doctor_notes: EvidenceNote[]; }
 export interface Recommendation {
   recommendation: string; red_flags: RedFlag[];
   sources: { materia_medica: string[]; similar_cases: string[]; doctor_notes: string[] };
-  confidence: string; disclaimer: string;
+  confidence: string; disclaimer: string; evidence?: Evidence;
 }
+export interface TimelineEvent { type: string; label: string; at: string | null; ref_id: string; meta?: any; }
+export interface AuditEntry { id: string; event_type: string; label: string; patient_id?: string | null; visit_id?: string | null; payload: any; created_at: string; }
 export interface Remedy {
   name: string; potency?: string; dosage?: string; frequency?: string; duration?: string;
 }
@@ -56,6 +62,31 @@ export const patientApi = {
   list: (q = "") => apiClient.get<Patient[]>("/patients", { params: { q } }),
   create: (data: any) => apiClient.post<Patient>("/patients", data),
   get: (id: string) => apiClient.get<Patient>(`/patients/${id}`),
+  timeline: (id: string) =>
+    apiClient.get<{ patient: { id: string; full_name: string }; events: TimelineEvent[] }>(`/patients/${id}/timeline`),
+};
+
+// ---- Global search ----
+export const searchApi = {
+  query: (q: string) => apiClient.get<{
+    query: string;
+    patients: { id: string; full_name: string; phone: string }[];
+    visits: { id: string; patient_id: string; chief_complaint?: string; status: string }[];
+    prescriptions: { id: string; visit_id: string; remedies: string }[];
+  }>("/search", { params: { q } }),
+};
+
+// ---- Audit / activity ----
+export const auditApi = {
+  list: (limit = 100) => apiClient.get<AuditEntry[]>("/audit", { params: { limit } }),
+  verify: () => apiClient.get<{ ok: boolean; count: number; first_broken_index?: number }>("/audit/verify"),
+};
+
+// ---- Knowledge base ----
+export const knowledgeApi = {
+  addNote: (title: string, text: string) =>
+    apiClient.post<{ doc_id: string; indexed: boolean }>("/knowledge/notes", { title, text }),
+  status: () => apiClient.get<{ vector_backend: string; embeddings: string }>("/knowledge/status"),
 };
 
 // ---- Visits ----
