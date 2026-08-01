@@ -6,7 +6,7 @@ from uuid import UUID
 
 class PatientCreate(BaseModel):
     full_name: str
-    date_of_birth: date
+    date_of_birth: Optional[date] = None
     gender: str = Field(pattern="^(male|female|other)$")
     phone: str
     email: Optional[str] = None
@@ -27,7 +27,7 @@ class PatientUpdate(BaseModel):
 class PatientOut(BaseModel):
     id: UUID
     full_name: str
-    date_of_birth: date
+    date_of_birth: Optional[date] = None
     gender: str
     phone: str
     email: Optional[str] = None

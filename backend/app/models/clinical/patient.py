@@ -27,7 +27,7 @@ class Patient(Base):
     # doctor's id (matches RAGEngine(clinic_id=str(doctor.id))).
     clinic_id       = Column(UUID(as_uuid=True), nullable=False)
     full_name       = Column(String(255), nullable=False)
-    date_of_birth   = Column(Date, nullable=False)
+    date_of_birth   = Column(Date, nullable=True)   # optional — walk-in registration often lacks it
     gender          = Column(Enum(GenderEnum), nullable=False)
     phone           = Column(String(20), nullable=False)
     email           = Column(String(255))

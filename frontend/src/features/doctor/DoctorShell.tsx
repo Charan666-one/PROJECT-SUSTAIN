@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/slices/authStore";
 import { searchApi } from "../../services/api/endpoints";
@@ -23,11 +23,16 @@ export default function DoctorShell({ children }: { children: React.ReactNode })
   const navigate = useNavigate();
   const [q, setQ] = useState("");
   const [results, setResults] = useState<any>(null);
+  const timer = useRef<number | undefined>(undefined);
 
-  const onSearch = async (value: string) => {
+  const onSearch = (value: string) => {
     setQ(value);
+    window.clearTimeout(timer.current);
     if (value.trim().length < 2) { setResults(null); return; }
-    try { setResults((await searchApi.query(value)).data); } catch { setResults(null); }
+    // Debounce so the request fires after you stop typing (keeps typing smooth).
+    timer.current = window.setTimeout(async () => {
+      try { setResults((await searchApi.query(value)).data); } catch { setResults(null); }
+    }, 250);
   };
 
   const go = (path: string) => { setResults(null); setQ(""); navigate(path); };
