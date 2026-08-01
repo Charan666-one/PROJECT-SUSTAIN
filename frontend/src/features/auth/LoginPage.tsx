@@ -37,10 +37,18 @@ export default function LoginPage() {
 
   return (
     <div className="center-screen">
-      <form className="card auth-card" onSubmit={submit}>
-        <h2 style={{ color: "var(--primary)", letterSpacing: ".04em" }}>SUSTAIN</h2>
+      <div className="auth-shell">
+        <aside className="auth-brand">
+          <div className="mark">SUSTAIN<small>Clinic OS</small></div>
+          <div className="lead">The calm, clinical home for your practice.</div>
+          <div className="sub">Decision support that keeps you — the doctor — in control, from first visit to full recovery.</div>
+          <div className="dots"><i /><i /><i /></div>
+        </aside>
+
+      <form className="auth-panel" onSubmit={submit}>
+        <h2 style={{ marginBottom: ".1rem" }}>{mode === "login" ? "Welcome back" : "Create your clinic"}</h2>
         <p className="muted" style={{ marginTop: 0 }}>
-          {mode === "login" ? "Sign in to your clinic" : "Create your clinic account"}
+          {mode === "login" ? "Sign in to continue to your clinic." : "Set up your clinic account in seconds."}
         </p>
 
         {mode === "register" && (
@@ -69,6 +77,7 @@ export default function LoginPage() {
           </a>
         </p>
       </form>
+      </div>
     </div>
   );
 }

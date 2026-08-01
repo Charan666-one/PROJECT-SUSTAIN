@@ -70,7 +70,13 @@ export default function DoctorShell({ children }: { children: React.ReactNode })
               </div>
             )}
           </div>
-          <span className="who">Dr. {doctor?.full_name} · {doctor?.clinic_name}</span>
+          <div className="who row" style={{ gap: ".6rem" }}>
+            <div className="avatar" aria-hidden>{(doctor?.full_name || "D").trim().charAt(0).toUpperCase()}</div>
+            <div style={{ lineHeight: 1.15 }}>
+              <div style={{ color: "var(--ink)", fontWeight: 600 }}>Dr. {doctor?.full_name}</div>
+              <div style={{ fontSize: ".76rem" }}>{doctor?.clinic_name}</div>
+            </div>
+          </div>
           <button className="btn sm secondary" onClick={() => { logout(); navigate("/login"); }}>Log out</button>
         </header>
         <main className="content">{children}</main>
