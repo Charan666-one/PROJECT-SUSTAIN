@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authApi } from "../../services/api/endpoints";
+import { getErrorMessage } from "../../services/api/errors";
 import { useAuthStore } from "../../store/slices/authStore";
 
 export default function LoginPage() {
@@ -29,7 +30,7 @@ export default function LoginPage() {
       login(me.data, data.access_token);
       navigate("/");
     } catch (err: any) {
-      setError(err?.response?.data?.detail || "Something went wrong. Check your details and try again.");
+      setError(getErrorMessage(err, "Something went wrong. Check your details and try again."));
     } finally {
       setBusy(false);
     }

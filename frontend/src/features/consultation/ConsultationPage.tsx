@@ -5,6 +5,7 @@ import {
   type Recommendation, type Remedy, type Prescription,
 } from "../../services/api/endpoints";
 import EvidencePanel from "./EvidencePanel";
+import { getErrorMessage } from "../../services/api/errors";
 
 const EMPTY_REMEDY: Remedy = { name: "", potency: "", dosage: "", frequency: "", duration: "" };
 
@@ -46,7 +47,7 @@ export default function ConsultationPage() {
   const recommend = async () => {
     setBusy("recommend"); setError("");
     try { setRec((await consultationApi.recommend(visitId, payload())).data); }
-    catch (e: any) { setError(e?.response?.data?.detail || "Could not generate recommendation."); }
+    catch (e: any) { setError(getErrorMessage(e, "Could not generate recommendation.")); }
     finally { setBusy(""); }
   };
 
@@ -66,7 +67,7 @@ export default function ConsultationPage() {
       });
       setPrescription(data);
     } catch (e: any) {
-      setError(e?.response?.data?.detail || "Could not approve prescription.");
+      setError(getErrorMessage(e, "Could not approve prescription."));
     } finally { setBusy(""); }
   };
 

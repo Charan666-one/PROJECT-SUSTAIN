@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { patientApi, visitApi, type Patient } from "../../services/api/endpoints";
+import { getErrorMessage } from "../../services/api/errors";
 
 const EMPTY = { full_name: "", date_of_birth: "", gender: "male", phone: "", consent_given: false };
 
@@ -47,7 +48,7 @@ export default function PatientsListPage() {
       });
       setForm(EMPTY); setShowForm(false); load(q);
     } catch (err: any) {
-      setError(err?.response?.data?.detail || "Could not create patient. Please try again.");
+      setError(getErrorMessage(err, "Could not create patient. Please try again."));
     } finally { setBusy(false); }
   };
 
