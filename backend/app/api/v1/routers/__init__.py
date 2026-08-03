@@ -2,11 +2,12 @@ from fastapi import APIRouter
 from app.api.v1.endpoints import (
     auth, patients, visits, consultations,
     prescriptions, followups, analytics, voice, knowledge, surveillance,
-    search, audit
+    search, audit, portal
 )
 
 api_router = APIRouter()
 api_router.include_router(auth.router,          prefix="/auth",          tags=["Authentication"])
+api_router.include_router(portal.router,        prefix="/portal",        tags=["Patient Portal"])
 api_router.include_router(patients.router,      prefix="/patients",      tags=["Patients"])
 api_router.include_router(visits.router,        prefix="/visits",        tags=["Visits"])
 api_router.include_router(consultations.router, prefix="/consultations", tags=["Consultations"])

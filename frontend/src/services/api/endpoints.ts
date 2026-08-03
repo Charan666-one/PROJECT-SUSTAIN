@@ -64,6 +64,8 @@ export const patientApi = {
   get: (id: string) => apiClient.get<Patient>(`/patients/${id}`),
   timeline: (id: string) =>
     apiClient.get<{ patient: { id: string; full_name: string }; events: TimelineEvent[] }>(`/patients/${id}/timeline`),
+  access: (id: string, regenerate = false) =>
+    apiClient.get<{ phone: string; access_code: string; portal_url: string }>(`/patients/${id}/access`, { params: { regenerate } }),
 };
 
 // ---- Global search ----

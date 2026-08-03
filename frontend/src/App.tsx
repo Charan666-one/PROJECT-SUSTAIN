@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuthStore } from "./store/slices/authStore";
+import { usePatientAuthStore } from "./store/slices/patientAuthStore";
 import DoctorShell from "./features/doctor/DoctorShell";
 import LoginPage from "./features/auth/LoginPage";
 import DashboardPage from "./features/doctor/DashboardPage";
@@ -12,6 +13,13 @@ import KnowledgeBasePage from "./features/knowledge/KnowledgeBasePage";
 import AnalyticsPage from "./features/analytics/AnalyticsPage";
 import AuditLogPage from "./features/audit/AuditLogPage";
 import SettingsPage from "./features/settings/SettingsPage";
+// Patient portal
+import PatientShell from "./features/portal/PatientShell";
+import PatientLoginPage from "./features/portal/PatientLoginPage";
+import PatientDashboardPage from "./features/portal/PatientDashboardPage";
+import PatientPrescriptionsPage from "./features/portal/PatientPrescriptionsPage";
+import PatientCheckinsPage from "./features/portal/PatientCheckinsPage";
+import PatientTimelinePage from "./features/portal/PatientTimelinePage";
 
 function Doctor({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore();
@@ -19,9 +27,16 @@ function Doctor({ children }: { children: React.ReactNode }) {
   return <DoctorShell>{children}</DoctorShell>;
 }
 
+function Patient({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated } = usePatientAuthStore();
+  if (!isAuthenticated) return <Navigate to="/portal/login" replace />;
+  return <PatientShell>{children}</PatientShell>;
+}
+
 export default function App() {
   return (
     <Routes>
+      {/* Doctor portal */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/" element={<Doctor><DashboardPage /></Doctor>} />
       <Route path="/patients" element={<Doctor><PatientsListPage /></Doctor>} />
@@ -34,6 +49,14 @@ export default function App() {
       <Route path="/analytics" element={<Doctor><AnalyticsPage /></Doctor>} />
       <Route path="/audit" element={<Doctor><AuditLogPage /></Doctor>} />
       <Route path="/settings" element={<Doctor><SettingsPage /></Doctor>} />
+
+      {/* Patient portal */}
+      <Route path="/portal/login" element={<PatientLoginPage />} />
+      <Route path="/portal" element={<Patient><PatientDashboardPage /></Patient>} />
+      <Route path="/portal/prescriptions" element={<Patient><PatientPrescriptionsPage /></Patient>} />
+      <Route path="/portal/checkins" element={<Patient><PatientCheckinsPage /></Patient>} />
+      <Route path="/portal/timeline" element={<Patient><PatientTimelinePage /></Patient>} />
+
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

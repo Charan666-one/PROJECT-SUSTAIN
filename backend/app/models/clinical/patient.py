@@ -26,6 +26,8 @@ class Patient(Base):
     # Owning clinic scope. In the single-doctor-clinic MVP this equals the
     # doctor's id (matches RAGEngine(clinic_id=str(doctor.id))).
     clinic_id       = Column(UUID(as_uuid=True), nullable=False)
+    # Patient portal login: phone + this code (doctor shares/regenerates it).
+    access_code     = Column(String(12))
     full_name       = Column(String(255), nullable=False)
     date_of_birth   = Column(Date, nullable=True)   # optional — walk-in registration often lacks it
     gender          = Column(Enum(GenderEnum), nullable=False)

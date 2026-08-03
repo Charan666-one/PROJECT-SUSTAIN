@@ -3,6 +3,30 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { patientApi, visitApi, type Patient, type TimelineEvent } from "../../services/api/endpoints";
 import { Async } from "../../components/ui/State";
 
+function PortalAccessCard({ patientId }: { patientId: string }) {
+  const [access, setAccess] = useState<{ phone: string; access_code: string } | null>(null);
+  const [busy, setBusy] = useState(false);
+  const load = (regen = false) => { setBusy(true); patientApi.access(patientId, regen).then((r) => setAccess(r.data)).finally(() => setBusy(false)); };
+  useEffect(() => { load(); }, [patientId]);
+  return (
+    <div className="card">
+      <h3>Patient portal access</h3>
+      <p className="muted" style={{ marginTop: 0 }}>Share these so the patient can sign in at <strong>/portal</strong> to see their prescription and send check-ins.</p>
+      <div className="row" style={{ gap: "1.5rem" }}>
+        <div><div className="muted" style={{ fontSize: ".72rem" }}>PHONE</div><strong>{access?.phone || "—"}</strong></div>
+        <div><div className="muted" style={{ fontSize: ".72rem" }}>ACCESS CODE</div><strong style={{ fontSize: "1.3rem", letterSpacing: ".1em" }}>{access?.access_code || "••••••"}</strong></div>
+      </div>
+      <div className="row" style={{ marginTop: ".75rem" }}>
+        <button className="btn sm secondary" disabled={busy}
+          onClick={() => access && navigator.clipboard?.writeText(`SUSTAIN patient portal\nOpen /portal\nPhone: ${access.phone}\nCode: ${access.access_code}`)}>
+          Copy invite
+        </button>
+        <button className="btn sm secondary" disabled={busy} onClick={() => load(true)}>Regenerate code</button>
+      </div>
+    </div>
+  );
+}
+
 const NODE_CLASS: Record<string, string> = { recovered: "recovered", followup: "followup" };
 
 export default function PatientProfilePage() {
@@ -40,6 +64,8 @@ export default function PatientProfilePage() {
               {p.gender} · DOB {p.date_of_birth} · {p.phone}
               {p.consent_given && <> · <span className="badge high">consent on file</span></>}
             </p>
+
+            <PortalAccessCard patientId={id} />
 
             <div className="card">
               <h3>Treatment timeline</h3>

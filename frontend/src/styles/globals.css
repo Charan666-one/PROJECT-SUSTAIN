@@ -226,6 +226,29 @@ tbody tr:hover { background: var(--surface-2); }
 .search-results a:hover, .search-results .item:hover { background: var(--surface-2); }
 @media (max-width: 860px) { .shell { grid-template-columns: 1fr; } .sidebar { position: static; height: auto; flex-direction: row; overflow-x: auto; align-items: center; } .sidebar .section, .sidebar .brand small { display: none; } .sidebar .brand { font-size: 1.1rem; padding: .8rem 1rem; } }
 
+/* ---------- Patient Portal (friendly, top-bar, mobile-first) ---------- */
+.portal { min-height: 100vh; }
+.portal-top { display: flex; align-items: center; gap: 1rem; height: 64px; padding: 0 1.25rem; background: linear-gradient(160deg, var(--side-a), #0d3a3a 90%); color: #fff; position: sticky; top: 0; z-index: 10; }
+.portal-top .mark { font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 1.35rem; }
+.portal-top .mark small { font-family: "Inter"; font-size: .58rem; letter-spacing: .24em; color: #8fb6ae; display: block; text-transform: uppercase; }
+.portal-top .spacer { flex: 1; }
+.portal-tabs { display: flex; gap: .3rem; padding: .5rem 1rem; background: var(--surface); border-bottom: 1px solid var(--line); position: sticky; top: 64px; z-index: 9; overflow-x: auto; }
+.portal-tabs a { padding: .5rem .85rem; border-radius: 9px; font-weight: 600; font-size: .9rem; color: var(--muted); white-space: nowrap; }
+.portal-tabs a:hover { background: var(--surface-2); color: var(--ink); }
+.portal-tabs a.active { background: var(--primary-050); color: var(--primary-strong); }
+.portal-content { max-width: 720px; margin: 0 auto; padding: 1.5rem 1.25rem 3rem; }
+.hero-status { background: linear-gradient(160deg, var(--primary), #0d6b62); color: #fff; border-radius: var(--r-lg); padding: 1.5rem; box-shadow: var(--sh-2); }
+.hero-status .big { font-size: 1.7rem; font-weight: 800; letter-spacing: -.02em; margin-top: .2rem; }
+.hero-status .lbl { font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; color: #bfe4dd; }
+.feel-btns { display: grid; grid-template-columns: repeat(3,1fr); gap: .6rem; }
+.feel-btns button { padding: 1rem .5rem; border-radius: var(--r); border: 1.5px solid var(--line); background: #fff; font-weight: 700; cursor: pointer; font-size: .95rem; transition: all .15s ease; }
+.feel-btns button:hover { border-color: var(--primary); }
+.feel-btns button.sel-better { border-color: var(--ok); background: var(--ok-bg); color: var(--ok); }
+.feel-btns button.sel-same { border-color: var(--warn); background: var(--warn-bg); color: var(--warn); }
+.feel-btns button.sel-worse { border-color: var(--danger); background: var(--danger-bg); color: var(--danger); }
+.notif { display: flex; gap: .7rem; align-items: flex-start; padding: .7rem 0; border-bottom: 1px solid var(--line-soft); }
+.notif .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin-top: .45rem; flex: none; }
+
 /* ---------- Timeline ---------- */
 .timeline { position: relative; margin-left: .5rem; padding-left: 1.4rem; border-left: 2px solid var(--line); }
 .timeline .node { position: relative; padding: .3rem 0 1.15rem; }

@@ -6,11 +6,14 @@ import {
 } from "../../services/api/endpoints";
 import EvidencePanel from "./EvidencePanel";
 import { getErrorMessage } from "../../services/api/errors";
+import { openPdf } from "../../services/pdf";
+import { useAuthStore } from "../../store/slices/authStore";
 
 const EMPTY_REMEDY: Remedy = { name: "", potency: "", dosage: "", frequency: "", duration: "" };
 
 export default function ConsultationPage() {
   const { visitId = "" } = useParams();
+  const token = useAuthStore((s) => s.token);
 
   const [sym, setSym] = useState({
     chief_complaint: "", structured_symptoms: "", worse: "", better: "",
@@ -93,7 +96,7 @@ export default function ConsultationPage() {
             </tbody>
           </table>
           <div className="row" style={{ marginTop: "1rem" }}>
-            <a className="btn" href={prescriptionApi.pdfUrl(prescription.id)} target="_blank" rel="noreferrer">View / print PDF</a>
+            <button className="btn" onClick={() => openPdf(prescriptionApi.pdfUrl(prescription.id), token)}>View / print PDF</button>
             <button className="btn accent" onClick={sendWhatsapp} disabled={busy === "wa"}>
               {prescription.whatsapp_sent ? "WhatsApp sent ✓" : busy === "wa" ? "Sending…" : "Send via WhatsApp"}
             </button>

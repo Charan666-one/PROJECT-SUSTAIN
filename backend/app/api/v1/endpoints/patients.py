@@ -1,9 +1,15 @@
 """Patient management — CRUD with DPDP consent capture."""
+import secrets
 from datetime import datetime
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+
+def _gen_access_code() -> str:
+    """6-digit patient-portal access code (easy to share verbally / on WhatsApp)."""
+    return f"{secrets.randbelow(1_000_000):06d}"
 
 from app.core.database import get_db
 from app.core.config import settings
@@ -49,6 +55,7 @@ async def create_patient(
         consent_given=True,
         consent_version=settings.CONSENT_VERSION,
         consent_at=datetime.utcnow(),
+        access_code=_gen_access_code(),
     )
     db.add(patient)
     await db.flush()
@@ -86,6 +93,26 @@ async def get_patient(
     if not patient:
         raise HTTPException(status_code=404, detail="Patient not found")
     return patient
+
+
+@router.get("/{patient_id}/access")
+async def get_patient_access(
+    patient_id: str,
+    regenerate: bool = False,
+    db: AsyncSession = Depends(get_db),
+    doctor: Doctor = Depends(get_current_doctor),
+):
+    """The patient-portal credentials the doctor shares (phone + access code)."""
+    patient = (await db.execute(
+        select(Patient).where(Patient.id == patient_id, Patient.clinic_id == doctor.id)
+    )).scalar_one_or_none()
+    if not patient:
+        raise HTTPException(status_code=404, detail="Patient not found")
+    if regenerate or not patient.access_code:
+        patient.access_code = _gen_access_code()
+        await db.commit()
+        await db.refresh(patient)
+    return {"phone": patient.phone, "access_code": patient.access_code, "portal_url": "/portal"}
 
 
 @router.get("/{patient_id}/timeline")
