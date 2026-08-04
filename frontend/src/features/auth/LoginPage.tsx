@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { authApi } from "../../services/api/endpoints";
 import { getErrorMessage } from "../../services/api/errors";
 import { useAuthStore } from "../../store/slices/authStore";
@@ -77,6 +77,11 @@ export default function LoginPage() {
             {mode === "login" ? "Create an account" : "Sign in"}
           </a>
         </p>
+        <div style={{ borderTop: "1px solid var(--line)", marginTop: "1rem", paddingTop: ".9rem", textAlign: "center" }}>
+          <Link to="/portal/login" className="muted" style={{ fontSize: ".85rem" }}>
+            Are you a patient? Go to the Patient Portal →
+          </Link>
+        </div>
       </form>
       </div>
     </div>

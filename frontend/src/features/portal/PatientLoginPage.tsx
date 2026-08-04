@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { portalAuth } from "../../services/api/portal";
 import { usePatientAuthStore } from "../../store/slices/patientAuthStore";
 import { getErrorMessage } from "../../services/api/errors";
@@ -49,6 +49,11 @@ export default function PatientLoginPage() {
           <p className="muted" style={{ textAlign: "center", marginTop: ".9rem", fontSize: ".82rem" }}>
             Don't have a code? Ask your clinic to share it.
           </p>
+          <div style={{ borderTop: "1px solid var(--line)", marginTop: ".6rem", paddingTop: ".9rem", textAlign: "center" }}>
+            <Link to="/login" className="muted" style={{ fontSize: ".85rem" }}>
+              Are you a clinic / doctor? Sign in here →
+            </Link>
+          </div>
         </form>
       </div>
     </div>
