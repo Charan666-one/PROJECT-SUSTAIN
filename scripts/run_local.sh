@@ -28,8 +28,10 @@ echo "==> Setting up Python venv + deps"
 [ -d backend/.venv ] || python3 -m venv backend/.venv
 # shellcheck disable=SC1091
 source backend/.venv/bin/activate
-pip install -q --upgrade pip
-pip install -q -r backend/requirements-dev.txt
+# Use `python -m pip` and repair pip if its metadata is broken; don't self-upgrade
+# pip (that step is what tends to corrupt the venv's pip).
+python -m ensurepip --upgrade -q 2>/dev/null || true
+python -m pip install -q -r backend/requirements-dev.txt
 
 echo "==> Applying database migrations (alembic upgrade head)"
 ( cd backend && alembic upgrade head )

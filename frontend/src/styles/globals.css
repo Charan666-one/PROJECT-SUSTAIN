@@ -194,6 +194,9 @@ tbody tr:hover { background: var(--surface-2); }
 .auth-brand .dots i { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,.35); }
 .auth-brand .dots i:first-child { background: var(--accent); }
 .auth-panel { padding: 2.6rem; display: flex; flex-direction: column; justify-content: center; }
+.trust-badges { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.25rem; }
+.trust-badge { display: inline-flex; align-items: center; gap: .35rem; font-size: .74rem; font-weight: 600; color: var(--muted); background: var(--surface-2); border: 1px solid var(--line); border-radius: 999px; padding: .28rem .6rem; }
+.trust-badge svg { color: var(--primary); }
 .auth-card { width: 380px; max-width: 92vw; }   /* legacy fallback */
 @media (max-width: 780px) { .auth-shell { grid-template-columns: 1fr; } .auth-brand { display: none; } }
 
@@ -218,8 +221,12 @@ tbody tr:hover { background: var(--surface-2); }
 .content { padding: 1.9rem 1.9rem 3rem; max-width: 1220px; width: 100%; }
 .content h1 { margin-bottom: 1.1rem; }
 .search-wrap { position: relative; flex: 1; max-width: 480px; }
-.search-wrap input { padding: .52rem .8rem .52rem 2.1rem; border-radius: 10px; background: var(--surface-2); }
-.search-wrap::before { content: "⌕"; position: absolute; left: .7rem; top: 50%; transform: translateY(-50%); color: var(--faint); font-size: 1.05rem; z-index: 1; }
+.search-wrap input { padding: .52rem .8rem .52rem 2.2rem; border-radius: 10px; background: var(--surface-2); }
+.search-ico { position: absolute; left: .72rem; top: 50%; transform: translateY(-50%); color: var(--faint); z-index: 1; pointer-events: none; }
+.sidebar .ico { flex: none; opacity: .82; }
+.app-footer { margin-top: auto; padding: 1rem 1.9rem; border-top: 1px solid var(--line); color: var(--faint); font-size: .78rem; }
+.app-footer strong { color: var(--muted); }
+.dot-sep { margin: 0 .4rem; opacity: .5; }
 .search-results { position: absolute; top: 118%; left: 0; right: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--sh-3); z-index: 20; max-height: 62vh; overflow: auto; padding: .3rem; }
 .search-results .grp { font-size: .64rem; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); font-weight: 700; padding: .55rem .7rem .2rem; }
 .search-results a, .search-results .item { display: block; padding: .5rem .7rem; border-radius: 8px; cursor: pointer; }
@@ -233,7 +240,7 @@ tbody tr:hover { background: var(--surface-2); }
 .portal-top .mark small { font-family: "Inter"; font-size: .58rem; letter-spacing: .24em; color: #8fb6ae; display: block; text-transform: uppercase; }
 .portal-top .spacer { flex: 1; }
 .portal-tabs { display: flex; gap: .3rem; padding: .5rem 1rem; background: var(--surface); border-bottom: 1px solid var(--line); position: sticky; top: 64px; z-index: 9; overflow-x: auto; }
-.portal-tabs a { padding: .5rem .85rem; border-radius: 9px; font-weight: 600; font-size: .9rem; color: var(--muted); white-space: nowrap; }
+.portal-tabs a { display: inline-flex; align-items: center; gap: .4rem; padding: .5rem .85rem; border-radius: 9px; font-weight: 600; font-size: .9rem; color: var(--muted); white-space: nowrap; }
 .portal-tabs a:hover { background: var(--surface-2); color: var(--ink); }
 .portal-tabs a.active { background: var(--primary-050); color: var(--primary-strong); }
 .portal-content { max-width: 720px; margin: 0 auto; padding: 1.5rem 1.25rem 3rem; }
@@ -256,6 +263,11 @@ tbody tr:hover { background: var(--surface-2); }
 .timeline .node.recovered::before { background: var(--accent); box-shadow: 0 0 0 3px rgba(5,150,105,.16); }
 .timeline .node.followup::before { background: var(--warn); box-shadow: 0 0 0 3px rgba(180,83,9,.14); }
 .timeline .when { font-size: .74rem; color: var(--faint); font-feature-settings: "tnum"; }
+
+/* Skeleton shimmer */
+.skeleton { border-radius: 6px; background: linear-gradient(90deg, #eef1f5 25%, #e2e7ee 37%, #eef1f5 63%); background-size: 400% 100%; animation: shimmer 1.4s ease infinite; }
+@keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
 /* Motion respect */
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }

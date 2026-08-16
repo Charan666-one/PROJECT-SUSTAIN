@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { authApi } from "../../services/api/endpoints";
 import { getErrorMessage } from "../../services/api/errors";
 import { useAuthStore } from "../../store/slices/authStore";
+import TrustBadges from "../../components/ui/TrustBadges";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -44,6 +45,7 @@ export default function LoginPage() {
           <div className="lead">The calm, clinical home for your practice.</div>
           <div className="sub">Decision support that keeps you — the doctor — in control, from first visit to full recovery.</div>
           <div className="dots"><i /><i /><i /></div>
+          <TrustBadges />
         </aside>
 
       <form className="auth-panel" onSubmit={submit}>

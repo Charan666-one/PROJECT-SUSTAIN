@@ -8,6 +8,7 @@ import EvidencePanel from "./EvidencePanel";
 import { getErrorMessage } from "../../services/api/errors";
 import { openPdf } from "../../services/pdf";
 import { useAuthStore } from "../../store/slices/authStore";
+import toast from "react-hot-toast";
 
 const EMPTY_REMEDY: Remedy = { name: "", potency: "", dosage: "", frequency: "", duration: "" };
 
@@ -69,6 +70,7 @@ export default function ConsultationPage() {
         doctor_notes: notes, red_flag_dismissed: dismiss,
       });
       setPrescription(data);
+      toast.success("Prescription approved · follow-ups scheduled");
     } catch (e: any) {
       setError(getErrorMessage(e, "Could not approve prescription."));
     } finally { setBusy(""); }

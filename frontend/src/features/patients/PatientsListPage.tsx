@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import { patientApi, visitApi, type Patient } from "../../services/api/endpoints";
 import { getErrorMessage } from "../../services/api/errors";
 
@@ -47,6 +48,7 @@ export default function PatientsListPage() {
         date_of_birth: form.date_of_birth || null,   // "" -> null (date of birth is optional)
       });
       setForm(EMPTY); setShowForm(false); load(q);
+      toast.success(`${form.full_name.trim()} added`);
     } catch (err: any) {
       setError(getErrorMessage(err, "Could not create patient. Please try again."));
     } finally { setBusy(false); }

@@ -1,21 +1,25 @@
 import { useRef, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import {
+  LayoutDashboard, Users, ClipboardList, HeartPulse, RefreshCw,
+  BookOpen, BarChart3, ShieldCheck, Settings, Search, LogOut,
+} from "lucide-react";
 import { useAuthStore } from "../../store/slices/authStore";
 import { searchApi } from "../../services/api/endpoints";
 
 const NAV = [
   { section: "Clinical" },
-  { to: "/", label: "Dashboard", icon: "◱", end: true },
-  { to: "/patients", label: "Patients", icon: "☺" },
-  { to: "/consultations", label: "Consultations", icon: "✎" },
-  { to: "/surveillance", label: "Surveillance", icon: "❤" },
-  { to: "/followups", label: "Follow-ups", icon: "↻" },
+  { to: "/", label: "Dashboard", Icon: LayoutDashboard, end: true },
+  { to: "/patients", label: "Patients", Icon: Users },
+  { to: "/consultations", label: "Consultations", Icon: ClipboardList },
+  { to: "/surveillance", label: "Surveillance", Icon: HeartPulse },
+  { to: "/followups", label: "Follow-ups", Icon: RefreshCw },
   { section: "Knowledge & Insight" },
-  { to: "/knowledge", label: "Knowledge Base", icon: "▤" },
-  { to: "/analytics", label: "Analytics", icon: "▧" },
-  { to: "/audit", label: "Audit Log", icon: "⛨" },
+  { to: "/knowledge", label: "Knowledge Base", Icon: BookOpen },
+  { to: "/analytics", label: "Analytics", Icon: BarChart3 },
+  { to: "/audit", label: "Audit Log", Icon: ShieldCheck },
   { section: "Clinic" },
-  { to: "/settings", label: "Settings", icon: "⚙" },
+  { to: "/settings", label: "Settings", Icon: Settings },
 ];
 
 export default function DoctorShell({ children }: { children: React.ReactNode }) {
@@ -47,7 +51,7 @@ export default function DoctorShell({ children }: { children: React.ReactNode })
           ) : (
             <NavLink key={n.to} to={n.to!} end={(n as any).end}
               className={({ isActive }) => (isActive ? "active" : "")}>
-              <span className="ico" aria-hidden>{n.icon}</span> {n.label}
+              <n.Icon className="ico" size={17} strokeWidth={2} aria-hidden /> {n.label}
             </NavLink>
           )
         )}
@@ -56,6 +60,7 @@ export default function DoctorShell({ children }: { children: React.ReactNode })
       <div className="main-area">
         <header className="topbar">
           <div className="search-wrap">
+            <Search className="search-ico" size={16} aria-hidden />
             <input aria-label="Global search" placeholder="Search patients, symptoms, remedies…"
               value={q} onChange={(e) => onSearch(e.target.value)} />
             {results && (
@@ -82,9 +87,15 @@ export default function DoctorShell({ children }: { children: React.ReactNode })
               <div style={{ fontSize: ".76rem" }}>{doctor?.clinic_name}</div>
             </div>
           </div>
-          <button className="btn sm secondary" onClick={() => { logout(); navigate("/login"); }}>Log out</button>
+          <button className="btn sm secondary" onClick={() => { logout(); navigate("/login"); }}>
+            <LogOut size={14} /> Log out
+          </button>
         </header>
         <main className="content">{children}</main>
+        <footer className="app-footer">
+          AI-assisted clinical decision support — <strong>the doctor makes every decision</strong>.
+          <span className="dot-sep">·</span> DPDP Act 2023 aligned <span className="dot-sep">·</span> Every action audit-logged
+        </footer>
       </div>
     </div>
   );

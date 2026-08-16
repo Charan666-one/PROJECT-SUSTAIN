@@ -1,6 +1,14 @@
 /** Small reusable state components: loading, error, empty. */
-export function Loading({ label = "Loading…" }: { label?: string }) {
-  return <div className="card muted" role="status" aria-live="polite">{label}</div>;
+export function Loading() {
+  return (
+    <div className="card" role="status" aria-live="polite" aria-busy="true">
+      <span className="sr-only">Loading…</span>
+      <div className="skeleton" style={{ width: "40%", height: 18, marginBottom: 14 }} />
+      <div className="skeleton" style={{ width: "100%", height: 12, marginBottom: 8 }} />
+      <div className="skeleton" style={{ width: "85%", height: 12, marginBottom: 8 }} />
+      <div className="skeleton" style={{ width: "60%", height: 12 }} />
+    </div>
+  );
 }
 
 export function ErrorNote({ message }: { message: string }) {

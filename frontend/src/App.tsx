@@ -1,6 +1,8 @@
+import { Suspense, lazy } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuthStore } from "./store/slices/authStore";
 import { usePatientAuthStore } from "./store/slices/patientAuthStore";
+import { Loading } from "./components/ui/State";
 import DoctorShell from "./features/doctor/DoctorShell";
 import LoginPage from "./features/auth/LoginPage";
 import DashboardPage from "./features/doctor/DashboardPage";
@@ -10,7 +12,8 @@ import ConsultationPage from "./features/consultation/ConsultationPage";
 import SurveillancePage from "./features/surveillance/SurveillancePage";
 import FollowUpsPage from "./features/followups/FollowUpsPage";
 import KnowledgeBasePage from "./features/knowledge/KnowledgeBasePage";
-import AnalyticsPage from "./features/analytics/AnalyticsPage";
+// Charts are heavy — load Analytics only when visited.
+const AnalyticsPage = lazy(() => import("./features/analytics/AnalyticsPage"));
 import AuditLogPage from "./features/audit/AuditLogPage";
 import SettingsPage from "./features/settings/SettingsPage";
 // Patient portal
@@ -46,7 +49,7 @@ export default function App() {
       <Route path="/surveillance" element={<Doctor><SurveillancePage /></Doctor>} />
       <Route path="/followups" element={<Doctor><FollowUpsPage /></Doctor>} />
       <Route path="/knowledge" element={<Doctor><KnowledgeBasePage /></Doctor>} />
-      <Route path="/analytics" element={<Doctor><AnalyticsPage /></Doctor>} />
+      <Route path="/analytics" element={<Doctor><Suspense fallback={<Loading />}><AnalyticsPage /></Suspense></Doctor>} />
       <Route path="/audit" element={<Doctor><AuditLogPage /></Doctor>} />
       <Route path="/settings" element={<Doctor><SettingsPage /></Doctor>} />
 

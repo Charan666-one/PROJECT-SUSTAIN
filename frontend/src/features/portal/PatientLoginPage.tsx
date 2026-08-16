@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { portalAuth } from "../../services/api/portal";
 import { usePatientAuthStore } from "../../store/slices/patientAuthStore";
 import { getErrorMessage } from "../../services/api/errors";
+import TrustBadges from "../../components/ui/TrustBadges";
 
 export default function PatientLoginPage() {
   const navigate = useNavigate();
@@ -34,6 +35,7 @@ export default function PatientLoginPage() {
           <div className="lead">Your treatment, in your pocket.</div>
           <div className="sub">See your prescription, track your recovery, and tell your doctor how you're feeling.</div>
           <div className="dots"><i /><i /><i /></div>
+          <TrustBadges />
         </aside>
         <form className="auth-panel" onSubmit={submit} noValidate>
           <h2 style={{ marginBottom: ".1rem" }}>Welcome</h2>

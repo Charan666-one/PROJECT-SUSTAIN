@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import toast from "react-hot-toast";
 import { patientApi, visitApi, type Patient, type TimelineEvent } from "../../services/api/endpoints";
 import { Async } from "../../components/ui/State";
 
@@ -18,7 +19,7 @@ function PortalAccessCard({ patientId }: { patientId: string }) {
       </div>
       <div className="row" style={{ marginTop: ".75rem" }}>
         <button className="btn sm secondary" disabled={busy}
-          onClick={() => access && navigator.clipboard?.writeText(`SUSTAIN patient portal\nOpen /portal\nPhone: ${access.phone}\nCode: ${access.access_code}`)}>
+          onClick={() => { if (access) { navigator.clipboard?.writeText(`SUSTAIN patient portal\nOpen /portal\nPhone: ${access.phone}\nCode: ${access.access_code}`); toast.success("Invite copied to clipboard"); } }}>
           Copy invite
         </button>
         <button className="btn sm secondary" disabled={busy} onClick={() => load(true)}>Regenerate code</button>

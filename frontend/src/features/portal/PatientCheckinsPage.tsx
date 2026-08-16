@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { portalApi, type PFollowUp } from "../../services/api/portal";
 import { getErrorMessage } from "../../services/api/errors";
 import { Async } from "../../components/ui/State";
@@ -51,7 +52,7 @@ function CheckinCard({ f, onDone }: { f: PFollowUp; onDone: () => void }) {
   const submit = async () => {
     if (!status) { setError("Please choose how you're feeling."); return; }
     setBusy(true); setError("");
-    try { await portalApi.respond(f.id, { status, wellness, notes }); onDone(); }
+    try { await portalApi.respond(f.id, { status, wellness, notes }); toast.success("Sent to your doctor 💚"); onDone(); }
     catch (e) { setError(getErrorMessage(e, "Could not submit. Please try again.")); setBusy(false); }
   };
 
