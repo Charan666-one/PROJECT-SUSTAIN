@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuthStore } from "./store/slices/authStore";
 import { usePatientAuthStore } from "./store/slices/patientAuthStore";
 import { Loading } from "./components/ui/State";
+import LandingPage from "./features/marketing/LandingPage";
 import DoctorShell from "./features/doctor/DoctorShell";
 import LoginPage from "./features/auth/LoginPage";
 import DashboardPage from "./features/doctor/DashboardPage";
@@ -39,9 +40,12 @@ function Patient({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <Routes>
+      {/* Public */}
+      <Route path="/" element={<LandingPage />} />
+
       {/* Doctor portal */}
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/" element={<Doctor><DashboardPage /></Doctor>} />
+      <Route path="/dashboard" element={<Doctor><DashboardPage /></Doctor>} />
       <Route path="/patients" element={<Doctor><PatientsListPage /></Doctor>} />
       <Route path="/patients/:id" element={<Doctor><PatientProfilePage /></Doctor>} />
       <Route path="/consultation/:visitId" element={<Doctor><ConsultationPage /></Doctor>} />

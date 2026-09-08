@@ -29,7 +29,7 @@ export default function LoginPage() {
       login({ id: "", full_name: form.full_name, email: form.email }, data.access_token);
       const me = await authApi.me();
       login(me.data, data.access_token);
-      navigate("/");
+      navigate("/dashboard");
     } catch (err: any) {
       setError(getErrorMessage(err, "Something went wrong. Check your details and try again."));
     } finally {

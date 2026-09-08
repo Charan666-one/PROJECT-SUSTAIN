@@ -9,7 +9,7 @@ import { searchApi } from "../../services/api/endpoints";
 
 const NAV = [
   { section: "Clinical" },
-  { to: "/", label: "Dashboard", Icon: LayoutDashboard, end: true },
+  { to: "/dashboard", label: "Dashboard", Icon: LayoutDashboard, end: true },
   { to: "/patients", label: "Patients", Icon: Users },
   { to: "/consultations", label: "Consultations", Icon: ClipboardList },
   { to: "/surveillance", label: "Surveillance", Icon: HeartPulse },

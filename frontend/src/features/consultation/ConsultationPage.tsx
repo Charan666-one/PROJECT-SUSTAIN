@@ -102,7 +102,7 @@ export default function ConsultationPage() {
             <button className="btn accent" onClick={sendWhatsapp} disabled={busy === "wa"}>
               {prescription.whatsapp_sent ? "WhatsApp sent ✓" : busy === "wa" ? "Sending…" : "Send via WhatsApp"}
             </button>
-            <Link className="btn secondary" to="/">Back to dashboard</Link>
+            <Link className="btn secondary" to="/dashboard">Back to dashboard</Link>
           </div>
           <p className="muted" style={{ marginTop: ".75rem" }}>Day 3, 7 and 30 follow-ups have been scheduled automatically.</p>
         </div>
